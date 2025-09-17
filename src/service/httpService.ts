@@ -4,7 +4,7 @@ import axiosRetry from "axios-retry";
 
 const axiosInstance = axios.create({
   baseURL: CONFIGS.API_BASE_URL,
-  timeout: 10000,
+  timeout: 0,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
