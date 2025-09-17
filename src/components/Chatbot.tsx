@@ -3,17 +3,38 @@ import type { Message } from "../types/paramTypes";
 import "./main.scss";
 import apiFunctions from "../functions/apiFunctions";
 import type { Source } from "../types/responseTypes";
+import Linkify from "react-linkify";
+import { IoSend } from "react-icons/io5";
+import { toast } from "react-toastify";
+import { BeatLoader, ClipLoader } from "react-spinners";
 
 const Chatbot = () => {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
+  const [resetLoader, setResetLoader] = useState<boolean>(false);
 
   // Scroll to bottom when new message arrives
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    const getUserChat = async () => {
+      try {
+        setMessagesLoading(true);
+        const data = await apiFunctions.getChatHistory();
+        setMessages(data);
+      } catch {
+        toast.error("Error while fetching user messages ");
+      } finally {
+        setMessagesLoading(false);
+      }
+    };
+    getUserChat();
+  }, []);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,14 +75,55 @@ const Chatbot = () => {
     }
   };
 
+  const resetSession = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoader(true);
+    try {
+      await apiFunctions.deleteSession();
+      toast.success("Session Cleared Successfully");
+      setMessages([]);
+    } catch (err) {
+      console.log(err);
+      toast.error("Couldn't Clear Session, Please try again");
+    } finally {
+      setResetLoader(false);
+    }
+  };
+
   return (
     <div className="chat-container">
       <header className="chat-header">
         <h1>RAG Chatbot</h1>
-        <button className="reset-button">Reset Session</button>
+        <button
+          className="reset-button"
+          type="submit"
+          disabled={resetLoader}
+          onClick={(e) => resetSession(e)}
+        >
+          {resetLoader ? (
+            <center>
+              <ClipLoader size={24} color="white" />
+            </center>
+          ) : (
+            "Reset Session"
+          )}
+        </button>
       </header>
 
       <main className="chat-window">
+        {messagesLoading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+              width: "100vw",
+            }}
+          >
+            <BeatLoader color="white" size={24} />
+          </div>
+        ) : null}
         {messages.map((msg) => {
           let messageClass = "chat-message ";
           if (msg.sender === "user") {
@@ -73,7 +135,9 @@ const Chatbot = () => {
           }
           return (
             <div key={msg.id} className={messageClass}>
-              <p>{msg.text}</p>
+              <div style={{ whiteSpace: "pre-line", padding: "10px" }}>
+                <Linkify>{msg.text}</Linkify>
+              </div>
               {msg.sources &&
                 Array.isArray(msg.sources) &&
                 msg.sources.length > 0 && (
@@ -118,7 +182,7 @@ const Chatbot = () => {
           autoComplete="off"
         />
         <button type="submit" disabled={!input.trim() || isLoading}>
-          Send
+          <IoSend size={24} />
         </button>
       </form>
     </div>
