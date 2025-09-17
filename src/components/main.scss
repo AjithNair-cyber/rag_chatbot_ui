@@ -19,6 +19,7 @@ $gemini-user-message-bg: #302d4f; // Muted dark purple
 $gemini-user-message-color: #e3e8ff;
 
 $gemini-bot-message-bg: #1c1d22; // A charcoal color
+$gemini-error-message-bg: #4a1a1a; // Dark red for errors
 $gemini-bot-message-color: #d1d1d1;
 
 $gemini-reset-color: #a04040;
@@ -117,6 +118,13 @@ body {
 
   &.bot-message {
     background-color: $gemini-bot-message-bg;
+    color: $gemini-bot-message-color;
+    margin-right: auto;
+    border-bottom-left-radius: 8px;
+  }
+
+  &.bot-error-message {
+    background-color: $gemini-error-message-bg;
     color: $gemini-bot-message-color;
     margin-right: auto;
     border-bottom-left-radius: 8px;

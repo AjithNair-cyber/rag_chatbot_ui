@@ -46,6 +46,7 @@ const Chatbot = () => {
         id: Date.now().toString(),
         text: "Sorry, something went wrong. Please try again.",
         sender: "bot",
+        success: false,
       };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
@@ -61,38 +62,41 @@ const Chatbot = () => {
       </header>
 
       <main className="chat-window">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`chat-message ${
-              msg.sender === "user" ? "user-message" : "bot-message"
-            }`}
-          >
-            <p>{msg.text}</p>
-
-            {msg.sources &&
-              Array.isArray(msg.sources) &&
-              msg.sources.length > 0 && (
-                <ul className="sources-list">
-                  {msg.sources.map((source: Source, idx: number) => (
-                    <li key={idx}>
-                      <a
-                        href={source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {source.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-          </div>
-        ))}
+        {messages.map((msg) => {
+          let messageClass = "chat-message ";
+          if (msg.sender === "user") {
+            messageClass += "user-message";
+          } else if (msg.success === false) {
+            messageClass += "bot-error-message";
+          } else {
+            messageClass += "bot-message";
+          }
+          return (
+            <div key={msg.id} className={messageClass}>
+              <p>{msg.text}</p>
+              {msg.sources &&
+                Array.isArray(msg.sources) &&
+                msg.sources.length > 0 && (
+                  <ul className="sources-list">
+                    {msg.sources.map((source: Source, idx: number) => (
+                      <li key={idx}>
+                        <a
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {source.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+            </div>
+          );
+        })}
         {isLoading && (
-          <div className={`chat-message`}>
+          <div className="chat-message bot-message">
             <div className="typing-container">
-              <span>AI is thinking...</span>
               <div className="typing-indicator">
                 <span></span>
                 <span></span>
