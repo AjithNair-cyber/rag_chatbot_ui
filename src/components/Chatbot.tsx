@@ -118,7 +118,7 @@ const Chatbot = () => {
               justifyContent: "center",
               alignItems: "center",
               height: "100vh",
-              width: "100vw",
+              width: "90vw",
             }}
           >
             <BeatLoader color="white" size={24} />
