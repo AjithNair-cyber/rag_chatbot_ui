@@ -140,7 +140,7 @@ const Chatbot = () => {
               </div>
               {Array.isArray(msg.sources) && msg.sources.length > 0 && (
                 <ul className="sources-list">
-                  {msg.sources.map((source, idx) =>
+                  {msg.sources.map((source: Source, idx: number) =>
                     source.url ? (
                       <li key={idx}>
                         <a
