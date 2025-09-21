@@ -138,11 +138,10 @@ const Chatbot = () => {
               <div style={{ whiteSpace: "pre-line", padding: "10px" }}>
                 <Linkify>{msg.text}</Linkify>
               </div>
-              {msg.sources &&
-                Array.isArray(msg.sources) &&
-                msg.sources.length > 0 && (
-                  <ul className="sources-list">
-                    {msg.sources.map((source: Source, idx: number) => (
+              {Array.isArray(msg.sources) && msg.sources.length > 0 && (
+                <ul className="sources-list">
+                  {msg.sources.map((source, idx) =>
+                    source.url ? (
                       <li key={idx}>
                         <a
                           href={source.url}
@@ -152,9 +151,10 @@ const Chatbot = () => {
                           {source.title}
                         </a>
                       </li>
-                    ))}
-                  </ul>
-                )}
+                    ) : null
+                  )}
+                </ul>
+              )}
             </div>
           );
         })}
